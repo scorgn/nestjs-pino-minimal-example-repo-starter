@@ -1,14 +1,23 @@
 import { NestFactory } from '@nestjs/core';
 import { Logger, Module } from '@nestjs/common';
 import { Logger as PLogger, LoggerModule } from 'nestjs-pino';
+import { Params } from 'nestjs-pino';
 
-@Module({imports: [LoggerModule.forRoot()]})
-class ExampleModule {}
+const nestJsPinoConfig = {
+   // The LoggerModule config goes here
+};
+
+// You should reproduce your bug in the function below
+function example() {
+  const logger = new Logger('Example');
+  logger.log('Example log statement');
+}
 
 (async function() {
-  const app = await NestFactory.create(ExampleModule);
-  app.useLogger(app.get(PLogger));
-  const logger = new Logger('Example');
+  @Module({imports: [LoggerModule.forRoot(nestJsPinoConfig)]})
+ class AppModule {}
 
-  logger.log('This is an example of a logger');
+  const app = await NestFactory.create(AppModule);
+  app.useLogger(app.get(PLogger));
+  example();
 })();
